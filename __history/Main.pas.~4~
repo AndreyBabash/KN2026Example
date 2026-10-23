@@ -1,0 +1,81 @@
+unit Main;
+
+interface
+
+uses
+  System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
+  FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, FMX.StdCtrls,
+  FMX.Controls.Presentation, FMX.Layouts;
+
+type
+  TForm1 = class(TForm)
+    Layout1: TLayout;
+    Label1: TLabel;
+    RadioButton1: TRadioButton;
+    RadioButton2: TRadioButton;
+    RadioButton3: TRadioButton;
+    Button1: TButton;
+    procedure FormCreate(Sender: TObject);
+    procedure FormPaint(Sender: TObject; Canvas: TCanvas; const ARect: TRectF);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; var KeyChar: WideChar;
+      Shift: TShiftState);
+  private
+    { Private declarations }
+    FColor : TAlphaColor;
+  public
+    { Public declarations }
+  end;
+
+var
+  Form1: TForm1;
+
+implementation
+
+{$R *.fmx}
+
+procedure TForm1.FormCreate(Sender: TObject);
+begin
+  Form1.Fill.Kind := TBrushKind.Solid;
+  Form1.Fill.Color := TAlphaColors.Antiquewhite;
+  FColor := TAlphaColors.Aquamarine;
+end;
+
+procedure TForm1.FormKeyDown(Sender: TObject; var Key: Word;
+  var KeyChar: WideChar; Shift: TShiftState);
+begin
+  case Key of
+  vkUp:
+  begin
+    FColor := TAlphaColors.Red;
+    Form1.Invalidate;
+  end;
+  vkDown:
+  begin
+    FColor := TAlphaColors.Yellow;
+    Form1.Invalidate;
+  end;
+  vkLeft:
+  begin
+    Layout1.Visible := not Layout1.Visible;
+  end;
+  end;
+end;
+
+procedure TForm1.FormPaint(Sender: TObject; Canvas: TCanvas;
+  const ARect: TRectF);
+var p1, p2, p3: TPointF;
+begin
+  p1.X := 0;
+  p1.Y := 0;
+  p2 := TPointF.Create(Form1.ClientWidth div 2, Form1.ClientHeight);
+  p3 := TPointF.Create(Form1.ClientWidth, 0);
+  Form1.Canvas.BeginScene();
+  Form1.Canvas.Stroke.Dash := TStrokeDash.Solid;
+  Form1.Canvas.Stroke.Thickness := 7;
+  Form1.Canvas.Stroke.Color := FColor;
+  Form1.Canvas.DrawLine(p1, p2, 1.0);
+  Form1.Canvas.DrawLine(p2, p3, 1.0);
+  Form1.Canvas.EndScene;
+end;
+
+end.

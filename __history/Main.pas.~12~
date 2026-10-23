@@ -1,0 +1,159 @@
+unit Main;
+
+interface
+
+uses
+  System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
+  FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, FMX.StdCtrls,
+  FMX.Controls.Presentation, FMX.Layouts, FMX.Colors, FMX.Ani, FMX.Gestures;
+
+type
+  TForm1 = class(TForm)
+    Layout1: TLayout;
+    Label1: TLabel;
+    RadioButton1: TRadioButton;
+    RadioButton2: TRadioButton;
+    RadioButton3: TRadioButton;
+    Button1: TButton;
+    ColorPicker1: TColorPicker;
+    TrackBar1: TTrackBar;
+    Label2: TLabel;
+    trackBarThickness: TTrackBar;
+    Label3: TLabel;
+    FloatAnimation1: TFloatAnimation;
+    GestureManager1: TGestureManager;
+    procedure FormCreate(Sender: TObject);
+    procedure FormPaint(Sender: TObject; Canvas: TCanvas; const ARect: TRectF);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; var KeyChar: WideChar;
+      Shift: TShiftState);
+    procedure RadioButton1Change(Sender: TObject);
+    procedure RadioButton2Change(Sender: TObject);
+    procedure RadioButton3Change(Sender: TObject);
+    procedure Button1Click(Sender: TObject);
+    procedure ColorPicker1Click(Sender: TObject);
+    procedure TrackBar1Change(Sender: TObject);
+    procedure trackBarThicknessChange(Sender: TObject);
+  private
+    { Private declarations }
+    FColor : TAlphaColor;
+    FLineType : TStrokeDash;
+    FOpacity : Single;
+    FThickness : Integer;
+  public
+    { Public declarations }
+  end;
+
+var
+  Form1: TForm1;
+
+implementation
+
+{$R *.fmx}
+
+procedure TForm1.Button1Click(Sender: TObject);
+begin
+  Layout1.Visible := not Layout1.Visible;
+  Form1.Invalidate;
+end;
+
+procedure TForm1.ColorPicker1Click(Sender: TObject);
+begin
+  FColor := ColorPicker1.Color;
+
+end;
+
+procedure TForm1.FormCreate(Sender: TObject);
+begin
+  Form1.Fill.Kind := TBrushKind.Solid;
+  Form1.Fill.Color := TAlphaColors.Antiquewhite;
+  FColor := TAlphaColors.Aquamarine;
+  FOpacity := 1;
+  FThickness := 2;
+end;
+
+procedure TForm1.FormKeyDown(Sender: TObject; var Key: Word;
+  var KeyChar: WideChar; Shift: TShiftState);
+begin
+{$IFDEF MSWINDOWS}
+  case Key of
+  vkUp:
+  begin
+    FColor := TAlphaColors.Red;
+    Form1.Invalidate;
+  end;
+  vkDown:
+  begin
+    FColor := TAlphaColors.Yellow;
+    Form1.Invalidate;
+  end;
+  vkLeft:
+  begin
+    Layout1.Position.X := 0;
+    Layout1.Position.Y := -Layout1.Height;
+    Layout1.Visible := not Layout1.Visible;
+    FloatAnimation1.StartValue := -Layout1.Height;
+    FloatAnimation1.StopValue := 0;
+    FloatAnimation1.Start;
+  end;
+  end;
+{$ENDIF}
+{$IFDEF ANDROID}
+  case Key of
+  vkVolumeUp:
+  begin
+    FColor := TAlphaColors.Red;
+    Form1.Invalidate;
+  end;
+  vkVolumeDown:
+  begin
+    FColor := TAlphaColors.Yellow;
+    Form1.Invalidate;
+  end;
+  end;
+{$ENDIF}
+end;
+
+procedure TForm1.FormPaint(Sender: TObject; Canvas: TCanvas;
+  const ARect: TRectF);
+var p1, p2, p3: TPointF;
+begin
+  p1.X := 0;
+  p1.Y := 0;
+  p2 := TPointF.Create(Form1.ClientWidth div 2, Form1.ClientHeight);
+  p3 := TPointF.Create(Form1.ClientWidth, 0);
+  Form1.Canvas.BeginScene();
+  Form1.Canvas.Stroke.Dash := FLineType;
+  Form1.Canvas.Stroke.Thickness := FThickness;
+  Form1.Canvas.Stroke.Color := FColor;
+  Form1.Canvas.DrawLine(p1, p2, FOpacity);
+  Form1.Canvas.DrawLine(p2, p3, FOpacity);
+  Form1.Canvas.EndScene;
+end;
+
+procedure TForm1.RadioButton1Change(Sender: TObject);
+begin
+  FLineType := TStrokeDash.Solid;
+end;
+
+procedure TForm1.RadioButton2Change(Sender: TObject);
+begin
+  FLineType := TStrokeDash.Dot;
+end;
+
+procedure TForm1.RadioButton3Change(Sender: TObject);
+begin
+  FLineType := TStrokeDash.Dash;
+end;
+
+procedure TForm1.TrackBar1Change(Sender: TObject);
+begin
+  FOpacity := TrackBar1.Value;
+end;
+
+procedure TForm1.trackBarThicknessChange(Sender: TObject);
+begin
+  FThickness := Round(trackBarThickness.Value);
+  Invalidate;
+end;
+
+end.
